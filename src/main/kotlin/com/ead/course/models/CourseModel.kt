@@ -17,37 +17,37 @@ import javax.persistence.*
 @Table(name = "TB_COURSES")
 class CourseModel(
     @Column(nullable = false, length = 150)
-    private val name: String? = null,
+    private val name: String,
 
     @Column(nullable = false, length = 250)
-    private val description: String? = null,
+    private val description: String,
 
     @Column
-    private val imageUrl: String? = null,
+    private val imageUrl: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
-    private val creationDate: LocalDateTime? = null,
+    private val creationDate: LocalDateTime,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
-    private val lastUpdateDate: LocalDateTime? = null,
+    private val lastUpdateDate: LocalDateTime,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private val courseStatus: CourseStatus? = null,
+    private val courseStatus: CourseStatus,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private val courseLevel: CourseLevel? = null,
+    private val courseLevel: CourseLevel,
 
     @Column(nullable = false)
-    private val userInstructor: UUID? = null,
+    private val userInstructor: UUID,
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private val modules: Set<ModuleModel>? = null,
+    private val modules: Set<ModuleModel>
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

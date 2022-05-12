@@ -13,21 +13,21 @@ import javax.persistence.*
 @Table(name = "TB_LESSONS")
 class LessonModel(
     @Column(nullable = false, length = 150)
-    private val title: String? = null,
+    private val title: String,
 
     @Column(nullable = false, length = 250)
-    private val description: String? = null,
+    private val description: String,
 
     @Column(nullable = false)
-    private val videoUrl: String? = null,
+    private val videoUrl: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
-    private val creationDate: LocalDateTime? = null,
+    private val creationDate: LocalDateTime,
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private val module: ModuleModel? = null
+    private val module: ModuleModel
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
