@@ -12,14 +12,14 @@ import java.util.*
 interface LessonRepository: JpaRepository<LessonModel, UUID>, JpaSpecificationExecutor<LessonModel> {
 
     @Query(value = "select * from tb_lessons where module_module_id = :moduleId", nativeQuery = true)
-    fun findAllLessonsIntoModule(@Param("moduleId") moduleId: UUID?): List<LessonModel>
+    fun findAllLessonsIntoModule(@Param("moduleId") moduleId: UUID): List<LessonModel>
 
     @Query(
         value = "select * from tb_lessons where module_module_id = :moduleId and lesson_id = :lessonId",
         nativeQuery = true
     )
     fun findLessonIntoModule(
-        @Param("moduleId") moduleId: UUID?,
-        @Param("lessonId") lessonId: UUID?
+        @Param("moduleId") moduleId: UUID,
+        @Param("lessonId") lessonId: UUID
     ): Optional<LessonModel>
 }

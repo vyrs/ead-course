@@ -17,13 +17,13 @@ import javax.persistence.*
 @Table(name = "TB_COURSES")
 class CourseModel(
     @Column(nullable = false, length = 150)
-    private val name: String,
+    var name: String,
 
     @Column(nullable = false, length = 250)
-    private val description: String,
+    var description: String,
 
     @Column
-    private val imageUrl: String,
+    var imageUrl: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
@@ -31,15 +31,15 @@ class CourseModel(
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
-    private val lastUpdateDate: LocalDateTime,
+    var lastUpdateDate: LocalDateTime,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private val courseStatus: CourseStatus,
+    var courseStatus: CourseStatus,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private val courseLevel: CourseLevel,
+    var courseLevel: CourseLevel,
 
     @Column(nullable = false)
     private val userInstructor: UUID,
@@ -47,9 +47,9 @@ class CourseModel(
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private val modules: Set<ModuleModel>
+    var modules: Set<ModuleModel>? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val courseId: UUID? = null
+    var courseId: UUID? = null
 }
