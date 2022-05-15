@@ -29,22 +29,22 @@ class ModuleServiceImpl(
     }
 
     override fun save(moduleModel: ModuleModel): ModuleModel {
-        TODO("Not yet implemented")
+        return moduleRepository.save(moduleModel)
     }
 
     override fun findModuleIntoCourse(courseId: UUID, moduleId: UUID): Optional<ModuleModel> {
-        TODO("Not yet implemented")
+        return moduleRepository.findModuleIntoCourse(courseId, moduleId)
     }
 
     override fun findAllByCourse(courseId: UUID): List<ModuleModel> {
-        TODO("Not yet implemented")
+        return moduleRepository.findAllLModulesIntoCourse(courseId)
     }
 
     override fun findById(moduleId: UUID): Optional<ModuleModel> {
-        TODO("Not yet implemented")
+        return moduleRepository.findById(moduleId)
     }
 
     override fun findAllByCourse(spec: Specification<ModuleModel>, pageable: Pageable): Page<ModuleModel> {
-        TODO("Not yet implemented")
+        return moduleRepository.findAll(spec, pageable)
     }
 }

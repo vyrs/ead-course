@@ -11,14 +11,14 @@ import java.util.*
 
 interface ModuleRepository: JpaRepository<ModuleModel, UUID>, JpaSpecificationExecutor<ModuleModel>{
     @Query(value = "select * from tb_modules where course_course_id = :courseId", nativeQuery = true)
-    fun findAllLModulesIntoCourse(@Param("courseId") courseId: UUID?): List<ModuleModel>
+    fun findAllLModulesIntoCourse(@Param("courseId") courseId: UUID): List<ModuleModel>
 
     @Query(
         value = "select * from tb_modules where course_course_id = :courseId and module_id = :moduleId",
         nativeQuery = true
     )
     fun findModuleIntoCourse(
-        @Param("courseId") courseId: UUID?,
-        @Param("moduleId") moduleId: UUID?
+        @Param("courseId") courseId: UUID,
+        @Param("moduleId") moduleId: UUID
     ): Optional<ModuleModel>
 }

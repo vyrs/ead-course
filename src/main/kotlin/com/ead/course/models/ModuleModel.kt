@@ -14,10 +14,10 @@ import javax.persistence.*
 @Table(name = "TB_MODULES")
 class ModuleModel(
     @Column(nullable = false, length = 150)
-    private val title: String,
+    var title: String,
 
     @Column(nullable = false, length = 250)
-    private val description: String,
+    var description: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)
@@ -32,7 +32,7 @@ class ModuleModel(
     @Fetch(
         FetchMode.SUBSELECT
     )
-    private val lessons: Set<LessonModel>
+    private val lessons: Set<LessonModel>? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
