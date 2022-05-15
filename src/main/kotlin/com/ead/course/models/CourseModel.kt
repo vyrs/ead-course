@@ -23,7 +23,7 @@ class CourseModel(
     var description: String,
 
     @Column
-    var imageUrl: String,
+    var imageUrl: String?,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)

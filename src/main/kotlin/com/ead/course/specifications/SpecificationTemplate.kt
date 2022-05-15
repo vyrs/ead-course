@@ -29,7 +29,7 @@ object SpecificationTemplate {
         }
     }
 
-    fun lessonModuleId(moduleId: UUID?): Specification<LessonModel> {
+    fun lessonModuleId(moduleId: UUID): Specification<LessonModel> {
         return Specification { root: Root<LessonModel>, query: CriteriaQuery<*>, cb: CriteriaBuilder ->
             query.distinct(true)
             val module = query.from(ModuleModel::class.java)

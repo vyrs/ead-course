@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param
 import java.util.*
 
 
-interface ModuleRepository: JpaRepository<ModuleModel, UUID>, JpaSpecificationExecutor<ModuleModel>{
+interface ModuleRepository: JpaRepository<ModuleModel, UUID>, JpaSpecificationExecutor<ModuleModel> {
     @Query(value = "select * from tb_modules where course_course_id = :courseId", nativeQuery = true)
     fun findAllLModulesIntoCourse(@Param("courseId") courseId: UUID): List<ModuleModel>
 

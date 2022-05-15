@@ -22,7 +22,7 @@ class CourseServiceImpl(
 
     @Transactional
     override fun delete(courseModel: CourseModel) {
-        val moduleModelList = moduleRepository.findAllLModulesIntoCourse(courseModel.courseId)
+        val moduleModelList = moduleRepository.findAllLModulesIntoCourse(courseModel.courseId!!)
         if (moduleModelList.isNotEmpty()) {
             for (module in moduleModelList) {
                 val lessonModelList = lessonRepository.findAllLessonsIntoModule(module.moduleId!!)

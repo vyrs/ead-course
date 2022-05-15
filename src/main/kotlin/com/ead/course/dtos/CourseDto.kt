@@ -14,7 +14,7 @@ data class CourseDto(
     val name: String,
     @field:NotBlank
     val description: String,
-    val imageUrl: String,
+    val imageUrl: String?,
     @field:NotNull
     val courseStatus: CourseStatus,
     @field:NotNull

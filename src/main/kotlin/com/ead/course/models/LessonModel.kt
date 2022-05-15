@@ -13,13 +13,13 @@ import javax.persistence.*
 @Table(name = "TB_LESSONS")
 class LessonModel(
     @Column(nullable = false, length = 150)
-    private val title: String,
+    var title: String,
 
     @Column(nullable = false, length = 250)
-    private val description: String,
+    var description: String,
 
     @Column(nullable = false)
-    private val videoUrl: String,
+    var videoUrl: String,
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     @Column(nullable = false)

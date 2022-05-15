@@ -12,22 +12,22 @@ import java.util.*
 @Service
 class LessonServiceImpl(private val lessonRepository: LessonRepository) : LessonService {
     override fun save(lessonModel: LessonModel): LessonModel {
-        TODO("Not yet implemented")
+        return lessonRepository.save(lessonModel)
     }
 
     override fun findLessonIntoModule(moduleId: UUID, lessonId: UUID): Optional<LessonModel> {
-        TODO("Not yet implemented")
+        return lessonRepository.findLessonIntoModule(moduleId, lessonId)
     }
 
     override fun delete(lessonModel: LessonModel) {
-        TODO("Not yet implemented")
+        lessonRepository.delete(lessonModel)
     }
 
     override fun findAllByModule(moduleId: UUID): List<LessonModel> {
-        TODO("Not yet implemented")
+        return lessonRepository.findAllLessonsIntoModule(moduleId)
     }
 
     override fun findAllByModule(spec: Specification<LessonModel>, pageable: Pageable): Page<LessonModel> {
-        TODO("Not yet implemented")
+        return lessonRepository.findAll(spec, pageable)
     }
 }

@@ -5,7 +5,8 @@ import com.ead.course.dtos.toModel
 import com.ead.course.models.ModuleModel
 import com.ead.course.services.CourseService
 import com.ead.course.services.ModuleService
-import com.ead.course.specifications.SpecificationTemplate
+import com.ead.course.specifications.SpecificationTemplate.ModuleSpec
+import com.ead.course.specifications.SpecificationTemplate.moduleCourseId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -77,11 +78,11 @@ class ModuleController(
     @GetMapping("/courses/{courseId}/modules")
     fun getAllModules(
         @PathVariable(value = "courseId") courseId: UUID,
-        spec: SpecificationTemplate.ModuleSpec?,
+        spec: ModuleSpec?,
         @PageableDefault(page = 0, size = 10, sort = ["moduleId"], direction = Sort.Direction.ASC) pageable: Pageable
     ): ResponseEntity<Page<ModuleModel>> {
         return ResponseEntity.status(HttpStatus.OK).body(
-            moduleService.findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable)
+            moduleService.findAllByCourse(moduleCourseId(courseId).and(spec), pageable)
         )
     }
 
