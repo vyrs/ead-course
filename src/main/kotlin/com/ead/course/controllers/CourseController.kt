@@ -1,5 +1,7 @@
 package com.ead.course.controllers
 
+import com.ead.course.configs.EadLog
+import com.ead.course.configs.log
 import com.ead.course.dtos.CourseDto
 import com.ead.course.dtos.toModel
 import com.ead.course.models.CourseModel
@@ -14,29 +16,35 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.UUID
 import javax.validation.Valid
-
 
 @RestController
 @RequestMapping("/courses")
 @CrossOrigin(origins = ["*"], maxAge = 3600)
-class CourseController(private val courseService: CourseService) {
+class CourseController(private val courseService: CourseService): EadLog {
 
     @PostMapping
     fun saveCourse(@RequestBody @Valid courseDto: CourseDto): ResponseEntity<Any> {
+        log().debug("POST saveCourse courseDto received {} ", courseDto.toString())
         val courseModel = courseDto.toModel()
+        courseService.save(courseModel)
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseModel))
+        log().debug("POST saveCourse courseId saved {} ", courseModel.courseId)
+        log().info("Course saved successfully courseId {} ", courseModel.courseId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseModel)
     }
 
     @DeleteMapping("/{courseId}")
     fun deleteCourse(@PathVariable(value = "courseId") courseId: UUID?): ResponseEntity<Any> {
+        log().debug("DELETE deleteCourse courseId received {} ", courseId)
         val courseModelOptional = courseService.findById(courseId)
         if (!courseModelOptional.isPresent) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
         }
         courseService.delete(courseModelOptional.get())
+        log().debug("DELETE deleteCourse courseId deleted {} ", courseId)
+        log().info("Course deleted successfully courseId {} ", courseId)
         return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.")
     }
 
@@ -45,6 +53,8 @@ class CourseController(private val courseService: CourseService) {
         @PathVariable(value = "courseId") courseId: UUID,
         @RequestBody @Valid courseDto: CourseDto
     ): ResponseEntity<Any> {
+        log().debug("PUT updateCourse courseDto received {} ", courseDto.toString())
+
         val courseModelOptional = courseService.findById(courseId)
         if (!courseModelOptional.isPresent) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
@@ -57,7 +67,12 @@ class CourseController(private val courseService: CourseService) {
         courseModel.courseLevel = courseDto.courseLevel
         courseModel.lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"))
 
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.save(courseModel))
+        courseService.save(courseModel)
+
+        log().debug("PUT updateCourse courseId saved {} ", courseModel.courseId)
+        log().info("Course updated successfully courseId {} ", courseModel.courseId)
+
+        return ResponseEntity.status(HttpStatus.OK).body(courseModel)
     }
 
     @GetMapping

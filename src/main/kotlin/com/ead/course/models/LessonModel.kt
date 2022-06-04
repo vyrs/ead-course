@@ -31,5 +31,5 @@ class LessonModel(
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private val lessonId: UUID? = null
+    val lessonId: UUID? = null
 }

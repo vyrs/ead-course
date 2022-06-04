@@ -1,5 +1,7 @@
 package com.ead.course.controllers
 
+import com.ead.course.configs.EadLog
+import com.ead.course.configs.log
 import com.ead.course.dtos.ModuleDto
 import com.ead.course.dtos.toModel
 import com.ead.course.models.ModuleModel
@@ -17,19 +19,19 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 import javax.validation.Valid
 
-
 @RestController
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 class ModuleController(
     private val moduleService: ModuleService,
     private val courseService: CourseService
-) {
+): EadLog {
 
     @PostMapping("/courses/{courseId}/modules")
     fun saveModule(
         @PathVariable(value = "courseId") courseId: UUID,
         @RequestBody @Valid moduleDto: ModuleDto
     ): ResponseEntity<Any> {
+        log().debug("POST saveModule moduleDto received {} ", moduleDto.toString())
         val courseModelOptional = courseService.findById(courseId)
         if (!courseModelOptional.isPresent) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
@@ -37,7 +39,11 @@ class ModuleController(
 
         val moduleModel = moduleDto.toModel(courseModelOptional.get())
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.save(moduleModel))
+        moduleService.save(moduleModel)
+
+        log().debug("POST saveModule moduleId saved {} ", moduleModel.moduleId)
+        log().info("Module saved successfully moduleId {} ", moduleModel.moduleId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleModel)
     }
 
     @DeleteMapping("/courses/{courseId}/modules/{moduleId}")
@@ -45,6 +51,7 @@ class ModuleController(
         @PathVariable(value = "courseId") courseId: UUID,
         @PathVariable(value = "moduleId") moduleId: UUID
     ): ResponseEntity<Any> {
+        log().debug("DELETE deleteModule moduleId received {} ", moduleId)
         val moduleModelOptional = moduleService.findModuleIntoCourse(
             courseId,
             moduleId
@@ -53,6 +60,8 @@ class ModuleController(
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Module not found for this course.")
         }
         moduleService.delete(moduleModelOptional.get())
+        log().debug("DELETE deleteModule moduleId deleted {} ", moduleId)
+        log().info("Module deleted successfully moduleId {} ", moduleId)
         return ResponseEntity.status(HttpStatus.OK).body("Module deleted successfully.")
     }
 
@@ -62,6 +71,7 @@ class ModuleController(
         @PathVariable(value = "moduleId") moduleId: UUID,
         @RequestBody @Valid moduleDto: ModuleDto
     ): ResponseEntity<Any> {
+        log().debug("PUT updateModule moduleDto received {} ", moduleDto.toString())
         val moduleModelOptional = moduleService.findModuleIntoCourse(
             courseId,
             moduleId
@@ -72,7 +82,12 @@ class ModuleController(
         val moduleModel = moduleModelOptional.get()
         moduleModel.title = moduleDto.title
         moduleModel.description = moduleDto.description
-        return ResponseEntity.status(HttpStatus.OK).body(moduleService.save(moduleModel))
+
+        moduleService.save(moduleModel)
+
+        log().debug("PUT updateModule moduleId saved {} ", moduleModel.moduleId)
+        log().info("Module updated successfully moduleId {} ", moduleModel.moduleId)
+        return ResponseEntity.status(HttpStatus.OK).body(moduleModel)
     }
 
     @GetMapping("/courses/{courseId}/modules")
