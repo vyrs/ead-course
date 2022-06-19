@@ -7,6 +7,7 @@ import com.ead.course.dtos.toModel
 import com.ead.course.models.CourseModel
 import com.ead.course.services.CourseService
 import com.ead.course.specifications.SpecificationTemplate.CourseSpec
+import com.ead.course.specifications.SpecificationTemplate.courseUserId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -16,8 +17,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.UUID
+import java.util.*
 import javax.validation.Valid
+
 
 @RestController
 @RequestMapping("/courses")
@@ -78,16 +80,29 @@ class CourseController(private val courseService: CourseService): EadLog {
     @GetMapping
     fun getAllCourses(
         spec: CourseSpec?,
-        @PageableDefault(page = 0, size = 10, sort = ["courseId"], direction = Sort.Direction.ASC) pageable: Pageable
+        @PageableDefault(page = 0, size = 10, sort = ["courseId"], direction = Sort.Direction.ASC) pageable: Pageable,
+        @RequestParam(required = false) userId: UUID?
     ): ResponseEntity<Page<CourseModel>> {
-        return ResponseEntity.status(HttpStatus.OK).body(
-            courseService.findAll(spec, pageable)
-        )
+        return if (userId != null) {
+            ResponseEntity.status(HttpStatus.OK).body(
+                courseService.findAll(
+                    courseUserId(userId).and(spec),
+                    pageable
+                )
+            )
+        } else {
+            ResponseEntity.status(HttpStatus.OK).body(
+                courseService.findAll(
+                    spec,
+                    pageable
+                )
+            )
+        }
     }
 
     @GetMapping("/{courseId}")
-    fun getOneCourse(@PathVariable(value = "courseId") courseId: UUID): ResponseEntity<Any> {
-        val courseModelOptional = courseService.findById(courseId)
+    fun getOneCourse(@PathVariable(value = "courseId") courseId: UUID?): ResponseEntity<Any> {
+        val courseModelOptional: Optional<CourseModel> = courseService.findById(courseId)
         return if (!courseModelOptional.isPresent) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
         } else ResponseEntity.status(HttpStatus.OK).body(courseModelOptional.get())
