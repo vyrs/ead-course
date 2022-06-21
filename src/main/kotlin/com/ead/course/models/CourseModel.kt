@@ -42,7 +42,7 @@ class CourseModel(
     var courseLevel: CourseLevel,
 
     @Column(nullable = false)
-    private val userInstructor: UUID,
+    val userInstructor: UUID,
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
