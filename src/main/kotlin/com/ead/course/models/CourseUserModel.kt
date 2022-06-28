@@ -13,7 +13,7 @@ class CourseUserModel(
     val userId: UUID,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    val course: CourseModel? = null
+    val course: CourseModel
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.hibernate.annotations.Fetch
 import org.hibernate.annotations.FetchMode
-import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
+
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
@@ -56,4 +56,8 @@ class CourseModel(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var courseId: UUID? = null
+
+    fun convertToCourseUserModel(userID: UUID) =
+        CourseUserModel(userID, this)
+
 }

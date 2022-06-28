@@ -2,6 +2,7 @@ package com.ead.course.clients
 
 import com.ead.course.configs.EadLog
 import com.ead.course.configs.log
+import com.ead.course.dtos.CourseUserDto
 import com.ead.course.dtos.ResponsePageDto
 import com.ead.course.dtos.UserDto
 import com.ead.course.services.UtilsService
@@ -47,11 +48,10 @@ class AuthUserClient(private val restTemplate: RestTemplate, private val utilsSe
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDto::class.java)
     }
 
-//    fun postSubscriptionUserInCourse(courseId: UUID?, userId: UUID) {
-//        val url = "$REQUEST_URL_AUTHUSER/users/$userId/courses/subscription"
-//        val courseUserDto = CourseUserDto()
-//        courseUserDto.setUserId(userId)
-//        courseUserDto.setCourseId(courseId)
-//        restTemplate.postForObject(url, courseUserDto, String::class.java)
-//    }
+    fun postSubscriptionUserInCourse(courseId: UUID, userId: UUID) {
+        val url = "$REQUEST_URL_AUTHUSER/users/$userId/courses/subscription"
+        val courseUserDto = CourseUserDto(userId, courseId)
+
+        restTemplate.postForObject(url, courseUserDto, String::class.java)
+    }
 }
