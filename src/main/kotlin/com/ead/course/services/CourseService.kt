@@ -10,6 +10,6 @@ import java.util.*
 interface CourseService {
     fun delete(courseModel: CourseModel)
     fun save(courseModel: CourseModel): CourseModel
-    fun findById(courseId: UUID?): Optional<CourseModel>
+    fun findById(courseId: UUID): Optional<CourseModel>
     fun findAll(spec: Specification<CourseModel>?, pageable: Pageable): Page<CourseModel>
 }

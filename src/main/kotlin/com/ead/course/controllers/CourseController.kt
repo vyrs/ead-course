@@ -8,12 +8,14 @@ import com.ead.course.models.CourseModel
 import com.ead.course.services.CourseService
 import com.ead.course.specifications.SpecificationTemplate.CourseSpec
 import com.ead.course.specifications.SpecificationTemplate.courseUserId
+import com.ead.course.validation.CourseValidator
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.Errors
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -24,11 +26,18 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/courses")
 @CrossOrigin(origins = ["*"], maxAge = 3600)
-class CourseController(private val courseService: CourseService): EadLog {
+class CourseController(private val courseService: CourseService, private val courseValidator: CourseValidator): EadLog {
 
     @PostMapping
-    fun saveCourse(@RequestBody @Valid courseDto: CourseDto): ResponseEntity<Any> {
+    fun saveCourse(@RequestBody courseDto: CourseDto, errors: Errors): ResponseEntity<Any> {
         log().debug("POST saveCourse courseDto received {} ", courseDto.toString())
+        courseValidator.validate(courseDto, errors)
+        if(errors.hasErrors()){
+            if(errors.allErrors.first().code == "UserInstructorNotFoundError")
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors.allErrors)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.allErrors)
+        }
+
         val courseModel = courseDto.toModel()
         courseService.save(courseModel)
 
@@ -38,7 +47,7 @@ class CourseController(private val courseService: CourseService): EadLog {
     }
 
     @DeleteMapping("/{courseId}")
-    fun deleteCourse(@PathVariable(value = "courseId") courseId: UUID?): ResponseEntity<Any> {
+    fun deleteCourse(@PathVariable(value = "courseId") courseId: UUID): ResponseEntity<Any> {
         log().debug("DELETE deleteCourse courseId received {} ", courseId)
         val courseModelOptional = courseService.findById(courseId)
         if (!courseModelOptional.isPresent) {
@@ -101,7 +110,7 @@ class CourseController(private val courseService: CourseService): EadLog {
     }
 
     @GetMapping("/{courseId}")
-    fun getOneCourse(@PathVariable(value = "courseId") courseId: UUID?): ResponseEntity<Any> {
+    fun getOneCourse(@PathVariable(value = "courseId") courseId: UUID): ResponseEntity<Any> {
         val courseModelOptional: Optional<CourseModel> = courseService.findById(courseId)
         return if (!courseModelOptional.isPresent) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")

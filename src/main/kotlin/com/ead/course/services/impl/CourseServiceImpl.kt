@@ -39,8 +39,8 @@ class CourseServiceImpl(
         return courseRepository.save(courseModel)
     }
 
-    override fun findById(courseId: UUID?): Optional<CourseModel> {
-        return courseRepository.findById(courseId!!)
+    override fun findById(courseId: UUID): Optional<CourseModel> {
+        return courseRepository.findById(courseId)
     }
 
     override fun findAll(spec: Specification<CourseModel>?, pageable: Pageable): Page<CourseModel> {
