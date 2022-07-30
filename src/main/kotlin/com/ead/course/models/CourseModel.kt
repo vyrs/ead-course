@@ -47,17 +47,9 @@ class CourseModel(
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    var modules: Set<ModuleModel>? = null,
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
-    val coursesUsers: Set<CourseUserModel>? = null
+    var modules: Set<ModuleModel>? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var courseId: UUID? = null
-
-    fun convertToCourseUserModel(userID: UUID) =
-        CourseUserModel(userID, this)
-
 }

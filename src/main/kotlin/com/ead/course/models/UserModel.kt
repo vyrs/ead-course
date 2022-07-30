@@ -7,13 +7,9 @@ import javax.persistence.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
-@Table(name = "TB_COURSES_USERS")
-class CourseUserModel(
-    @Column(nullable = false)
-    val userId: UUID,
+@Table(name = "TB_USERS")
+class UserModel(
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    val course: CourseModel
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

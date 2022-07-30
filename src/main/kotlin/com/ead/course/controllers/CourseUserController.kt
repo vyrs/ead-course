@@ -1,19 +1,15 @@
 package com.ead.course.controllers
 
-import com.ead.course.clients.AuthUserClient
 import com.ead.course.configs.EadLog
 import com.ead.course.dtos.SubscriptionDto
-import com.ead.course.dtos.UserDto
-import com.ead.course.enums.UserStatus
 import com.ead.course.services.CourseService
-import com.ead.course.services.CourseUserService
+import com.ead.course.services.UserService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.client.HttpStatusCodeException
 import java.util.*
 import javax.validation.Valid
 
@@ -21,9 +17,8 @@ import javax.validation.Valid
 @RestController
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 class CourseUserController(
-    private val authUserClient: AuthUserClient,
     private val courseService: CourseService,
-    private val courseUserService: CourseUserService
+    private val userService: UserService
 ): EadLog {
 
     @GetMapping("/courses/{courseId}/users")
@@ -36,7 +31,7 @@ class CourseUserController(
 
         return if (!courseModelOptional.isPresent) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
-        } else ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable))
+        } else ResponseEntity.status(HttpStatus.OK).body("")
     }
 
     @PostMapping("/courses/{courseId}/users/subscription")
@@ -44,36 +39,12 @@ class CourseUserController(
         @PathVariable(value = "courseId") courseId: UUID,
         @RequestBody subscriptionDto: @Valid SubscriptionDto
     ): ResponseEntity<Any> {
-        val responseUser: ResponseEntity<UserDto>
+
         val courseModelOptional = courseService.findById(courseId)
         if (!courseModelOptional.isPresent) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
         }
-        if (courseUserService.existsByCourseAndUserId(courseModelOptional.get(), subscriptionDto.userId)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!")
-        }
-        try {
-            responseUser = authUserClient.getOneUserById(subscriptionDto.userId)
-            if (responseUser.body!!.userStatus == UserStatus.BLOCKED) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.")
-            }
-        } catch (e: HttpStatusCodeException) {
-            if (e.statusCode == HttpStatus.NOT_FOUND) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.")
-            }
-        }
-        val courseUserModel = courseUserService.saveAndSendSubscriptionUserInCourse(
-            courseModelOptional.get().convertToCourseUserModel(subscriptionDto.userId)
-        )
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel)
-    }
 
-    @DeleteMapping("/courses/users/{userId}")
-    fun deleteCourseUserByUser(@PathVariable(value = "userId") userId: UUID): ResponseEntity<Any> {
-        if (!courseUserService.existsByUserId(userId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CourseUser not found.")
-        }
-        courseUserService.deleteCourseUserByUser(userId)
-        return ResponseEntity.status(HttpStatus.OK).body("CourseUser deleted successfully.")
+        return ResponseEntity.status(HttpStatus.CREATED).body("")
     }
 }

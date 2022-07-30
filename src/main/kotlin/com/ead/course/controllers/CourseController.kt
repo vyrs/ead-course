@@ -7,7 +7,6 @@ import com.ead.course.dtos.toModel
 import com.ead.course.models.CourseModel
 import com.ead.course.services.CourseService
 import com.ead.course.specifications.SpecificationTemplate.CourseSpec
-import com.ead.course.specifications.SpecificationTemplate.courseUserId
 import com.ead.course.validation.CourseValidator
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -90,23 +89,16 @@ class CourseController(private val courseService: CourseService, private val cou
     fun getAllCourses(
         spec: CourseSpec?,
         @PageableDefault(page = 0, size = 10, sort = ["courseId"], direction = Sort.Direction.ASC) pageable: Pageable,
-        @RequestParam(required = false) userId: UUID?
+        @RequestParam(required = false) userId: UUID
     ): ResponseEntity<Page<CourseModel>> {
-        return if (userId != null) {
-            ResponseEntity.status(HttpStatus.OK).body(
-                courseService.findAll(
-                    courseUserId(userId).and(spec),
-                    pageable
-                )
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            courseService.findAll(
+                spec,
+                pageable
             )
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(
-                courseService.findAll(
-                    spec,
-                    pageable
-                )
-            )
-        }
+        )
+
     }
 
     @GetMapping("/{courseId}")
