@@ -11,7 +11,10 @@ import java.util.*
 
 
 @Service
-class CourseUserServiceImpl(private val courseUserRepository: CourseUserRepository, private val authUserClient: AuthUserClient) : CourseUserService {
+class CourseUserServiceImpl(
+    private val courseUserRepository: CourseUserRepository,
+    private val authUserClient: AuthUserClient
+) : CourseUserService {
 
     override fun existsByCourseAndUserId(courseModel: CourseModel, userId: UUID): Boolean {
         return courseUserRepository.existsByCourseAndUserId(courseModel, userId)
@@ -25,5 +28,14 @@ class CourseUserServiceImpl(private val courseUserRepository: CourseUserReposito
     override fun saveAndSendSubscriptionUserInCourse(courseUserModel: CourseUserModel): CourseUserModel {
         authUserClient.postSubscriptionUserInCourse(courseUserModel.course.courseId!!, courseUserModel.userId)
         return courseUserRepository.save(courseUserModel)
+    }
+
+    override fun existsByUserId(userId: UUID): Boolean {
+        return courseUserRepository.existsByUserId(userId)
+    }
+
+    @Transactional
+    override fun deleteCourseUserByUser(userId: UUID) {
+        courseUserRepository.deleteAllByUserId(userId)
     }
 }

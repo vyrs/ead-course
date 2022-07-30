@@ -1,5 +1,6 @@
 package com.ead.course.services.impl
 
+import com.ead.course.clients.AuthUserClient
 import com.ead.course.models.CourseModel
 import com.ead.course.models.CourseUserModel
 import com.ead.course.repositories.CourseRepository
@@ -20,15 +21,16 @@ class CourseServiceImpl(
     private val courseRepository: CourseRepository,
     private val moduleRepository: ModuleRepository,
     private val lessonRepository: LessonRepository,
-    private val courseUserRepository: CourseUserRepository
+    private val courseUserRepository: CourseUserRepository,
+    private val authUserClient: AuthUserClient
 ) : CourseService {
 
     @Transactional
     override fun delete(courseModel: CourseModel) {
         val moduleModelList = moduleRepository.findAllLModulesIntoCourse(courseModel.courseId!!)
         if (moduleModelList.isNotEmpty()) {
-            for (module in moduleModelList) {
-                val lessonModelList = lessonRepository.findAllLessonsIntoModule(module.moduleId!!)
+            moduleModelList.forEach {
+                val lessonModelList = lessonRepository.findAllLessonsIntoModule(it.moduleId!!)
                 if (lessonModelList.isNotEmpty()) {
                     lessonRepository.deleteAll(lessonModelList)
                 }
@@ -37,12 +39,17 @@ class CourseServiceImpl(
         }
 
         val courseUserModelList: List<CourseUserModel> =
-            courseUserRepository.findAllCourseUserIntoCourse(courseModel.courseId!!)
+        courseUserRepository.findAllCourseUserIntoCourse(courseModel.courseId!!)
+
+        var deleteCourseUserInAuthUser = false
         if (courseUserModelList.isNotEmpty()) {
             courseUserRepository.deleteAll(courseUserModelList)
+            deleteCourseUserInAuthUser = true
         }
 
         courseRepository.delete(courseModel)
+
+        if (deleteCourseUserInAuthUser) authUserClient.deleteCourseInAuthUser(courseModel.courseId!!)
     }
 
     override fun save(courseModel: CourseModel): CourseModel {

@@ -7,7 +7,6 @@ import com.ead.course.dtos.UserDto
 import com.ead.course.enums.UserStatus
 import com.ead.course.services.CourseService
 import com.ead.course.services.CourseUserService
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpStatusCodeException
 import java.util.*
 import javax.validation.Valid
+
 
 @RestController
 @CrossOrigin(origins = ["*"], maxAge = 3600)
@@ -30,8 +30,13 @@ class CourseUserController(
     fun getAllUsersByCourse(
         @PageableDefault(page = 0, size = 10, sort = ["userId"], direction = Sort.Direction.ASC) pageable: Pageable,
         @PathVariable(value = "courseId") courseId: UUID
-    ): ResponseEntity<Page<UserDto>> {
-        return ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable))
+    ): ResponseEntity<Any> {
+
+        val courseModelOptional = courseService.findById(courseId)
+
+        return if (!courseModelOptional.isPresent) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
+        } else ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable))
     }
 
     @PostMapping("/courses/{courseId}/users/subscription")
@@ -61,5 +66,14 @@ class CourseUserController(
             courseModelOptional.get().convertToCourseUserModel(subscriptionDto.userId)
         )
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel)
+    }
+
+    @DeleteMapping("/courses/users/{userId}")
+    fun deleteCourseUserByUser(@PathVariable(value = "userId") userId: UUID): ResponseEntity<Any> {
+        if (!courseUserService.existsByUserId(userId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CourseUser not found.")
+        }
+        courseUserService.deleteCourseUserByUser(userId)
+        return ResponseEntity.status(HttpStatus.OK).body("CourseUser deleted successfully.")
     }
 }

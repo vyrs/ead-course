@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 import java.util.*
 
+
 @Component
 class AuthUserClient(private val restTemplate: RestTemplate, private val utilsService: UtilsService): EadLog {
 
@@ -53,5 +54,10 @@ class AuthUserClient(private val restTemplate: RestTemplate, private val utilsSe
         val courseUserDto = CourseUserDto(userId, courseId)
 
         restTemplate.postForObject(url, courseUserDto, String::class.java)
+    }
+
+    fun deleteCourseInAuthUser(courseId: UUID) {
+        val url = "$REQUEST_URL_AUTHUSER/users/courses/$courseId"
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String::class.java)
     }
 }
