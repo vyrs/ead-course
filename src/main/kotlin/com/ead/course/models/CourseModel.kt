@@ -47,7 +47,14 @@ class CourseModel(
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    var modules: Set<ModuleModel>? = null
+    var modules: Set<ModuleModel>? = null,
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(    name = "TB_COURSES_USERS",
+        joinColumns = [JoinColumn(name = "course_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")])
+    var users: Set<UserModel>? = null
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -4,6 +4,7 @@ import com.ead.course.configs.EadLog
 import com.ead.course.dtos.SubscriptionDto
 import com.ead.course.services.CourseService
 import com.ead.course.services.UserService
+import com.ead.course.specifications.SpecificationTemplate
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
@@ -23,6 +24,7 @@ class CourseUserController(
 
     @GetMapping("/courses/{courseId}/users")
     fun getAllUsersByCourse(
+        spec: SpecificationTemplate.UserSpec?,
         @PageableDefault(page = 0, size = 10, sort = ["userId"], direction = Sort.Direction.ASC) pageable: Pageable,
         @PathVariable(value = "courseId") courseId: UUID
     ): ResponseEntity<Any> {
@@ -31,7 +33,7 @@ class CourseUserController(
 
         return if (!courseModelOptional.isPresent) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
-        } else ResponseEntity.status(HttpStatus.OK).body("")
+        } else ResponseEntity.status(HttpStatus.OK).body(userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable))
     }
 
     @PostMapping("/courses/{courseId}/users/subscription")
