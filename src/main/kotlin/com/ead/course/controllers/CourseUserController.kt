@@ -2,6 +2,7 @@ package com.ead.course.controllers
 
 import com.ead.course.configs.EadLog
 import com.ead.course.dtos.SubscriptionDto
+import com.ead.course.enums.UserStatus
 import com.ead.course.services.CourseService
 import com.ead.course.services.UserService
 import com.ead.course.specifications.SpecificationTemplate
@@ -47,6 +48,20 @@ class CourseUserController(
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.")
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("")
+        if (courseService.existsByCourseAndUser(courseId, subscriptionDto.userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists!")
+        }
+        val userModelOptional = userService.findById(subscriptionDto.userId)
+        if (!userModelOptional.isPresent) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.")
+        }
+        if (userModelOptional.get().userStatus == UserStatus.BLOCKED.toString()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.")
+        }
+        courseService.saveSubscriptionUserInCourse(
+            courseModelOptional.get().courseId!!,
+            userModelOptional.get().userId
+        )
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.")
     }
 }

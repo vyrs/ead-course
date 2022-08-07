@@ -1,14 +1,18 @@
 package com.ead.course.validation
 
 import com.ead.course.dtos.CourseDto
+import com.ead.course.enums.UserType
+import com.ead.course.models.UserModel
+import com.ead.course.services.UserService
 import org.springframework.stereotype.Component
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import java.util.*
+import java.util.UUID
+import java.util.Optional
 
 
 @Component
-class CourseValidator(private val validator: Validator): Validator {
+class CourseValidator(private val validator: Validator, private val userService: UserService): Validator {
     override fun supports(clazz: Class<*>): Boolean {
         return false
     }
@@ -22,16 +26,12 @@ class CourseValidator(private val validator: Validator): Validator {
     }
 
     private fun validateUserInstructor(userInstructor: UUID, errors: Errors) {
-//        val responseUserInstructor: ResponseEntity<UserDto>
-//        try {
-//            responseUserInstructor = authUserClient.getOneUserById(userInstructor)
-//            if (responseUserInstructor.body!!.userType == UserType.STUDENT) {
-//                errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN.")
-//            }
-//        } catch (e: HttpStatusCodeException) {
-//            if (e.statusCode == HttpStatus.NOT_FOUND) {
-//                errors.rejectValue("userInstructor", "UserInstructorNotFoundError", "Instructor not found.")
-//            }
-//        }
+        val userModelOptional: Optional<UserModel> = userService.findById(userInstructor)
+        if (!userModelOptional.isPresent) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "Instructor not found.")
+        }
+        if (userModelOptional.get().userType == UserType.STUDENT.toString()) {
+            errors.rejectValue("userInstructor", "UserInstructorError", "User must be INSTRUCTOR or ADMIN.")
+        }
     }
 }

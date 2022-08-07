@@ -10,7 +10,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "TB_USERS")
 class UserModel(
-    @Id val id: UUID,
+    @Id val userId: UUID,
     @Column(nullable = false, unique = true, length = 50)
     val email: String,
     @Column(nullable = false, length = 150)

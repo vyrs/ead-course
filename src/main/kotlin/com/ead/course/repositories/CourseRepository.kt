@@ -14,17 +14,17 @@ interface CourseRepository: JpaRepository<CourseModel, UUID>, JpaSpecificationEx
         value = "select case when count(tcu) > 0 THEN true ELSE false END FROM tb_courses_users tcu WHERE tcu.course_id= :courseId and tcu.user_id= :userId",
         nativeQuery = true
     )
-    fun existsByCourseAndUser(@Param("courseId") courseId: UUID?, @Param("userId") userId: UUID?): Boolean
+    fun existsByCourseAndUser(@Param("courseId") courseId: UUID, @Param("userId") userId: UUID): Boolean
 
     @Modifying
     @Query(value = "insert into tb_courses_users values (:courseId,:userId)", nativeQuery = true)
-    fun saveCourseUser(@Param("courseId") courseId: UUID?, @Param("userId") userId: UUID?)
+    fun saveCourseUser(@Param("courseId") courseId: UUID, @Param("userId") userId: UUID)
 
     @Modifying
     @Query(value = "delete from tb_courses_users where course_id= :courseId", nativeQuery = true)
-    fun deleteCourseUserByCourse(@Param("courseId") courseId: UUID?)
+    fun deleteCourseUserByCourse(@Param("courseId") courseId: UUID)
 
     @Modifying
     @Query(value = "delete from tb_courses_users where user_id= :userId", nativeQuery = true)
-    fun deleteCourseUserByUser(@Param("userId") userId: UUID?)
+    fun deleteCourseUserByUser(@Param("userId") userId: UUID)
 }

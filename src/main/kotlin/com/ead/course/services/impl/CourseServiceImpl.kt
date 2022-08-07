@@ -2,9 +2,9 @@ package com.ead.course.services.impl
 
 import com.ead.course.models.CourseModel
 import com.ead.course.repositories.CourseRepository
-import com.ead.course.repositories.UserRepository
 import com.ead.course.repositories.LessonRepository
 import com.ead.course.repositories.ModuleRepository
+import com.ead.course.repositories.UserRepository
 import com.ead.course.services.CourseService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -34,6 +34,7 @@ class CourseServiceImpl(
             }
             moduleRepository.deleteAll(moduleModelList)
         }
+        courseRepository.deleteCourseUserByCourse(courseModel.courseId!!)
         courseRepository.delete(courseModel)
     }
 
@@ -47,5 +48,14 @@ class CourseServiceImpl(
 
     override fun findAll(spec: Specification<CourseModel>?, pageable: Pageable): Page<CourseModel> {
         return courseRepository.findAll(spec, pageable)
+    }
+
+    override fun existsByCourseAndUser(courseId: UUID, userId: UUID): Boolean {
+        return courseRepository.existsByCourseAndUser(courseId, userId)
+    }
+
+    @Transactional
+    override fun saveSubscriptionUserInCourse(courseId: UUID, userId: UUID) {
+        courseRepository.saveCourseUser(courseId, userId)
     }
 }
