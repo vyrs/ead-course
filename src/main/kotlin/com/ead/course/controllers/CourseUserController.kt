@@ -58,9 +58,9 @@ class CourseUserController(
         if (userModelOptional.get().userStatus == UserStatus.BLOCKED.toString()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked.")
         }
-        courseService.saveSubscriptionUserInCourse(
-            courseModelOptional.get().courseId!!,
-            userModelOptional.get().userId
+        courseService.saveSubscriptionUserInCourseAndSendNotification(
+            courseModelOptional.get(),
+            userModelOptional.get()
         )
         return ResponseEntity.status(HttpStatus.CREATED).body("Subscription created successfully.")
     }
