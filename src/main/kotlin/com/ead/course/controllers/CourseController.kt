@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.Errors
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
@@ -28,6 +29,7 @@ import javax.validation.Valid
 @CrossOrigin(origins = ["*"], maxAge = 3600)
 class CourseController(private val courseService: CourseService, private val courseValidator: CourseValidator): EadLog {
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     fun saveCourse(@RequestBody courseDto: CourseDto, errors: Errors): ResponseEntity<Any> {
         log().debug("POST saveCourse courseDto received {} ", courseDto.toString())
@@ -46,6 +48,7 @@ class CourseController(private val courseService: CourseService, private val cou
         return ResponseEntity.status(HttpStatus.CREATED).body(courseModel)
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
     fun deleteCourse(@PathVariable(value = "courseId") courseId: UUID): ResponseEntity<Any> {
         log().debug("DELETE deleteCourse courseId received {} ", courseId)
@@ -59,6 +62,7 @@ class CourseController(private val courseService: CourseService, private val cou
         return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.")
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
     fun updateCourse(
         @PathVariable(value = "courseId") courseId: UUID,
@@ -86,6 +90,7 @@ class CourseController(private val courseService: CourseService, private val cou
         return ResponseEntity.status(HttpStatus.OK).body(courseModel)
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     fun getAllCourses(
         spec: CourseSpec?,
@@ -110,6 +115,7 @@ class CourseController(private val courseService: CourseService, private val cou
 
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     fun getOneCourse(@PathVariable(value = "courseId") courseId: UUID): ResponseEntity<Any> {
         val courseModelOptional: Optional<CourseModel> = courseService.findById(courseId)
